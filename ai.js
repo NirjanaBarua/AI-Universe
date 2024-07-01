@@ -1,36 +1,74 @@
-//https://openapi.programming-hero.com/api/ai/tools
-//Single data details: https://openapi.programming-hero.com/api/ai/tool/${id}
-
-//Single data Example: https://openapi.programming-hero.com/api/ai/tool/01
+const toggleSpinner=isLoading=>{
+  const loaderSec=document.getElementById('loader');
+  if(isLoading)
+    {
+      loaderSec.classList.remove('d-none');
+    }
+    else
+    {
+      loaderSec.classList.add('d-none');
+    }
+}
 
 const loadData = () => {
-    fetch('https://openapi.programming-hero.com/api/ai/tools')
-        .then(res => res.json())
-        .then(Data => displayData(Data.data))
-        
+  toggleSpinner(true);
+  fetch('https://openapi.programming-hero.com/api/ai/tools')
+    .then(res => res.json())
+    .then(Data => displayData(Data.data))
+    toggleSpinner(false);
 }
 
 const displayData = data => {
-    const tools=data.tools;
-    const dataContainer = document.getElementById('data-container')
-    tools.forEach(tool => {
-        console.log(tool);
+  let tools = data.tools;
+  const dataContainer = document.getElementById('data-container');
+  const seeMore = document.getElementById('see-more');
+  
+  const initialDisplayTools = tools.slice(0, 6);
+  initialDisplayTools.forEach(tool => {
+    const dataDiv = document.createElement('div');
+    dataDiv.classList.add('col');
+    dataDiv.innerHTML = `<div class="card h-100">
+                            <img src="${tool.image}" class="card-img-top" alt="...">
+                            <div class="card-body">
+                            <h5>Features</h5>
+                              <ol type="1">
+                                ${tool.features.map(feature => `<li>${feature}</li>`).join('')}
+                              </ol>
+                            </div>
+                            <div class="card-footer">
+                              <h5 class="card-title">${tool.name}</h5>
+                              <small class="text-body-secondary">${tool.published_in}</small>
+                            </div>
+                          </div>`;
+    dataContainer.appendChild(dataDiv);
+  });
+
+  if (tools.length > 6) {
+    seeMore.classList.remove('d-none');
+    seeMore.onclick = () => {
+      dataContainer.innerHTML = ''; 
+      tools.forEach(tool => {
         const dataDiv = document.createElement('div');
         dataDiv.classList.add('col');
         dataDiv.innerHTML = `<div class="card h-100">
-                    <img src="..." class="card-img-top" alt="...">
-                    <div class="card-body">
-                      <h5 class="card-title">Card title</h5>
-                      <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-                    </div>
-                    <div class="card-footer">
-                      <small class="text-body-secondary">Last updated 3 mins ago</small>
-                    </div>
-                  </div>`
+                                <img src="${tool.image}" class="card-img-top" alt="...">
+                                <div class="card-body">
+                                  <ol type="1">
+                                    ${tool.features.map(feature => `<li>${feature}</li>`).join('')}
+                                  </ol>
+                                </div>
+                                <div class="card-footer">
+                                  <h5 class="card-title">${tool.name}</h5>
+                                  <small class="text-body-secondary">${tool.published_in}</small>
+                                </div>
+                              </div>`;
         dataContainer.appendChild(dataDiv);
-
-    });
-
+      });
+      seeMore.classList.add('d-none');
+    };
+  } else {
+    seeMore.classList.add('d-none');
+  }
 }
-
+toggleSpinner(true);
 loadData();
