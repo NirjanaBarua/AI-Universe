@@ -14,8 +14,10 @@ const loadData = () => {
   toggleSpinner(true);
   fetch('https://openapi.programming-hero.com/api/ai/tools')
     .then(res => res.json())
-    .then(Data => displayData(Data.data))
-    toggleSpinner(false);
+    .then(Data => {
+      displayData(Data.data);
+      toggleSpinner(false); // Hide spinner after data is loaded
+    })
 }
 
 const displayData = data => {
@@ -70,5 +72,5 @@ const displayData = data => {
     seeMore.classList.add('d-none');
   }
 }
-toggleSpinner(true);
+
 loadData();
